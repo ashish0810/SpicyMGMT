@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Settings</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script type="text/javascript" src="/scripts/settings.js"></script>
+		<script type="text/javascript" src="/scripts/func.js"></script>
+	</head>
+	<body onload="initSettingsPage();">
+		<!-- Top Nav Bar -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+			<a class="navbar-brand" href="#" id="top-title">Spicy Management</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbar">
+				<ul class="navbar-nav w-100">
+					<li class="nav-item dropdown ml-auto">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Welcome, [user]!</a>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+							<a class="dropdown-item" href="/settings">Settings</a>
+							<a class="dropdown-item" href="/logout">Sign out</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<!-- Main body container -->
+		<div class="container-fluid mt-3">
+			<div class="row">
+				<!-- Side Nav bar -->
+				<div class="col-3">
+					<div class="list-group">
+						<a href="/" class="list-group-item list-group-item-action">Dash</a>
+						<a href="/tasks" class="list-group-item list-group-item-action">Tasks</a>
+						<a href="/users" class="list-group-item list-group-item-action">Users</a>
+						<a href="/files" class="list-group-item list-group-item-action">Files</a>
+					</div>
+				</div>
+
+				<!-- Body content -->
+				<div class="col-9">
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h1>Settings</h1>
+						<!-- <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#addUserModal" id="addUserButton">Add User</button> -->
+					</div>
+					<form data-toggle="validator" id="settingsForm">
+						<div class="form-group">
+							<label for="settings-uid" class="col-form-label">Directory ID:</label>
+							<input type="text" class="form-control" id="settings-uid" readonly>
+						</div>
+						<div class="form-group">
+							<label for="settings-name" class="col-form-label">Name:</label>
+							<input type="text" class="form-control" id="settings-name" pattern="^[a-zA-Z0-9\s]{1,50}$" required>
+							<div class="help-block" style="font-size:80%" color="gray">Must contain no more than 50 alphanumeric or space characters.</div>
+						</div>
+						<div class="form-group">
+							<label for="settings-email" class="col-form-label">Email:</label>
+							<input type="text" class="form-control" id="settings-email" pattern="^(?=.{1,100}$)([^\s@]+@[^\s@]+\.[^\s@]+)$" required>
+							<div class="help-block" style="font-size:80%" color="gray">Must be an accpetable email address with no more than 100 characters.</div>
+						</div>
+						<button type="submit" class="btn btn-primary" onclick="saveSettings();">Save</button>
+					</form>
+					<!-- <table class="table table-bordered table-hover">
+						<thead class="thead-dark" id="users-heading">
+						</thead>
+						<tbody id="users-contain">
+						</tbody>
+					</table> -->
+				</div>
+			</div>
+		</div>
+
+		<!-- Modals -->
+		<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="add-user-id" class="col-form-label">Directory ID:</label>
+								<input type="text" class="form-control" id="add-user-id">
+							</div>
+							<div class="form-group">
+								<label for="add-user-name" class="col-form-label">Name:</label>
+								<input type="text" class="form-control" id="add-user-name">
+							</div>
+							<div class="form-group">
+								<label for="add-user-email" class="col-form-label">Email:</label>
+								<input type="text" class="form-control" id="add-user-email">
+							</div>
+							<div class="form-group">
+								<label for="add-user-role" class="col-form-label">Role:</label>
+								<input type="text" class="form-control" id="add-user-role">
+							</div>
+							<div class="form-group">
+								<label for="add-user-course" class="col-form-label">Course:</label>
+								<input type="text" class="form-control" id="add-user-course">
+							</div>
+							<div class="form-group">
+								<label for="add-user-section" class="col-form-label">Section:</label>
+								<input type="text" class="form-control" id="add-user-section">
+							</div>
+							<div class="form-group">
+								<label for="add-user-tags" class="col-form-label">Tags:</label>
+								<input type="text" class="form-control" id="add-user-tags">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" onclick="addUser()" data-dismiss="modal">Add</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<div class="form-group">
+								<label for="edit-user-id" class="col-form-label">Directory ID: (Cannot be changed)</label>
+								<input type="text" class="form-control" id="edit-user-id" readonly>
+							</div>
+							<div class="form-group">
+								<label for="edit-user-name" class="col-form-label">Name:</label>
+								<input type="text" class="form-control" id="edit-user-name">
+							</div>
+							<div class="form-group">
+								<label for="edit-user-email" class="col-form-label">Email:</label>
+								<input type="text" class="form-control" id="edit-user-email">
+							</div>
+							<div class="form-group">
+								<label for="edit-user-role" class="col-form-label">Role:</label>
+								<input type="text" class="form-control" id="edit-user-role">
+							</div>
+							<div class="form-group">
+								<label for="edit-user-course" class="col-form-label">Course:</label>
+								<input type="text" class="form-control" id="edit-user-course">
+							</div>
+							<div class="form-group">
+								<label for="edit-user-section" class="col-form-label">Section:</label>
+								<input type="text" class="form-control" id="edit-user-section">
+							</div>
+							<div class="form-group">
+								<label for="edit-user-tags" class="col-form-label">Tags:</label>
+								<input type="text" class="form-control" id="edit-user-tags">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal" data-target="#deleteUserModal" data-toggle="modal">Delete</button>
+						<button type="button" class="btn btn-primary" onclick="editUser()" data-dismiss="modal">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete the following user:</p>
+						<p id="delete-user-id"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" onclick="deleteUser()" data-dismiss="modal">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+	</body>
+</html>

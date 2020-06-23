@@ -1,0 +1,99 @@
+.task-complete {
+    border-left: 2px solid green !important;
+}
+
+.task-incomplete {
+    border-left: 2px solid red !important;
+}
+
+.custom-select {
+    height: 358px !important;
+}
+
+/* List input stuff */
+.list-holder {
+    margin-top: 0 !important;
+    line-height: 1.5em;
+}
+
+.list-item {
+    margin-right: 10px;
+}
+
+.list-close {
+    margin-left: 4px;
+}
+
+.list-close a {
+    text-decoration: none;
+    color: white;
+}
+
+.list-close a:hover {
+    color: white;
+}
+
+.list-group-item {
+  overflow-wrap: anywhere;
+}
+
+/* Autocomplete stuff */
+.autocomplete {
+    /*the container must be positioned relative:*/
+    position: relative;
+    /* display: inline-block; */
+}
+/* input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+} */
+input[type=text] {
+    /* background-color: #f1f1f1; */
+    width: 100%;
+}
+input[type=submit] {
+    background-color: DodgerBlue;
+    color: #fff;
+}
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+    /*when hovering an item:*/
+    background-color: #e9e9e9;
+}
+.autocomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+.help-block {
+    font-size: 80%;
+    color: gray;
+}
+  
+/* input.invalid {
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+} */
+.tags {
+    overflow-wrap: anywhere;
+}

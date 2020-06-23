@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Files</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script type="text/javascript" src="/scripts/func.js"></script>
+		<script type="text/javascript" src="scripts/files.js"></script>
+	</head>
+	<body onload="initFilesPage()">
+		<!-- Top Nav Bar -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+			<a class="navbar-brand" href="#" id="top-title">Spicy Management</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbar">
+				<ul class="navbar-nav w-100">
+					<li class="nav-item dropdown ml-auto">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Welcome, [user]!</a>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+							<a class="dropdown-item" href="/settings">Settings</a>
+							<a class="dropdown-item" href="/logout">Sign out</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<!-- Main body container -->
+		<div class="container-fluid mt-3">
+			<div class="row">
+				<!-- Side Nav bar -->
+				<div class="col-3">
+					<div class="list-group">
+						<a href="/" class="list-group-item list-group-item-action">Dash</a>
+						<a href="/tasks" class="list-group-item list-group-item-action">Tasks</a>
+						<a href="/users" class="list-group-item list-group-item-action">Users</a>
+						<a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Files</a>
+					</div>
+				</div>
+
+				<!-- Body content -->
+				<div class="col-9">
+				  <div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+					  <h1>Files<small class="text-muted ml-3" id="display-folder-path"></small></h1>
+					  <a href="/recycle" class="ml-auto"><button type="button" class="btn btn-sm btn-outline-success" id="recycleBinButton">Recycle Bin</button></a>
+					  <button type="button" class="btn btn-sm btn-outline-primary ml-2" data-toggle="modal" data-target="#createFolderModal">Create Folder</button>
+					  <button type="button" class="btn btn-sm btn-outline-primary ml-2" data-toggle="modal" data-target="#uploadFilesModal">Upload Files</button>
+				  </div>
+				  <table class="table table-bordered table-hover">
+					  <thead class="thead-dark">
+						  <tr>
+							  <th scope="col">Name</th>
+							  <th scope="col">Upload Date</th>
+							  <th scope="col">Uploaded By</th>
+							  <th scope="col">Actions</th>
+						  </tr>
+					  </thead>
+					  <tbody id="files-contain">
+					  </tbody>
+				  </table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modals -->
+		<div class="modal fade" id="uploadFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadFilesModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="uploadFilesModalLabel">Choose File(s) to Upload</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- MULTIPLE FILES -->
+						<form action="/uploadfiles" enctype="multipart/form-data" method="POST">
+							<input type="hidden" id="upload-file-parent" name="folder">
+							Upload Files: <input type="file" name="myFiles" id="upload-files" multiple>
+							<input type="submit" value="Upload Files"/>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="createFolderModalLabel">Create Folder</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form data-toggle="validator" id="createFolderForm">
+							<input type="hidden" id="create-folder-parent-path">
+							<div class="form-group">
+								<label for="create-folder-name" class="col-form-label">Folder Name:</label>
+								<input type="text" class="form-control" id="create-folder-name" pattern="^[a-zA-Z0-9\s]{0,50}$">
+								<div class="help-block" style="font-size:80%" color="gray">Must contain no more than twenty space or alphanumeric characters.</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" onclick="createFolder()">Create</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="deleteFileModal" tabindex="-1" role="dialog" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteFileModalLabel">Delete File</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete the following file:</p>
+						<p id="delete-file-name"></p>
+						<input type="hidden" id="delete-file-doc_id">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" onclick="deleteFile()" data-dismiss="modal">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="deleteFolderModal" tabindex="-1" role="dialog" aria-labelledby="deleteFolderModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteFolderModalLabel">Delete Folder</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete the following folder:</p>
+						<p id="delete-folder-name"></p>
+						<input type="hidden" id="delete-folder-doc_id">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" onclick="deleteFile()" data-dismiss="modal">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="viewFileModal" tabindex="-1" role="dialog" aria-labelledby="viewFileModalLabel" aria-hidden="true">
+			<div class="modal-lg modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="viewFileModalLabel"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-hover">
+							<thead class="thead-dark">
+								<tr>
+									<th scope="col">Version</th>
+									<th scope="col">Upload Date</th>
+									<th scope="col">Uploaded By</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody id="view-files-contain">
+							</tbody>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="deleteFileVersionModal" tabindex="-1" role="dialog" aria-labelledby="deleteFileVersionModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteFileVersionModalLabel">Delete File Version</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete the following file:</p>
+						<p>Name: </p>
+						<p id="delete-file-version-name"></p>
+						<p>Doc ID: </p>
+						<p id="delete-file-version-doc_id"></p>
+						<p>Version: </p>
+						<p id="delete-file-version-version"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" onclick="deleteFileVersion()" data-dismiss="modal">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="filesPromiseRejectionModal" tabindex="-1" role="dialog" aria-labelledby="filesPromiseRejectionModalLabel" aria-hiddden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<p></p>
+							<p>Server Error!</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+		</div>
+
+		<div class="modal fade" id="filesInvalidFolderNameModal" tabindex="-1" role="dialog" aria-labelledby="filesInvalidFolderNameModalLabel" aria-hiddden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="invalidTaskInputModalLabel">Invalid folder name!</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+					<div class="modal-body">
+						<p></p>
+						<p>Please make sure that your folder name is valid!</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+	</div>
+
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+	</body>
+</html>

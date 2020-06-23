@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Dashboard</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script type="text/javascript" src="scripts/func.js"></script>
+		<script type="text/javascript" src="scripts/dash.js"></script>
+	</head>
+	<body onload="initDash()">
+		<!-- Top Nav Bar -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+			<a class="navbar-brand" href="#" id="top-title">Spicy Management</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbar">
+				<ul class="navbar-nav w-100">
+					<li class="nav-item dropdown ml-auto">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Welcome, [user]!</a>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+							<a class="dropdown-item" href="/settings">Settings</a>
+							<a class="dropdown-item" href="/logout">Sign out</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<!-- Main body container -->
+		<div class="container-fluid mt-3">
+			<div class="row">
+				<!-- Side Nav bar -->
+				<div class="col-3">
+					<div class="list-group">
+						<a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Dash</a>
+						<a href="/tasks" class="list-group-item list-group-item-action">Tasks</a>
+						<a href="/users" class="list-group-item list-group-item-action">Users</a>
+						<a href="/files" class="list-group-item list-group-item-action">Files</a>
+					</div>
+				</div>
+
+				<!-- Body content -->
+				<div class="col-9">
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h1>Dashboard</h1>
+					</div>
+
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>Progress for Late and In-Progress Tasks</h3>
+					</div>
+					<div class="progress" id="progress-bar"></div>
+					<br>
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>Progress for Live Tasks</h3>
+					</div>
+					<div class="progress" id="progress-bar2"></div>
+					<br>
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>Progress for Undated Tasks</h3>
+					</div>
+					<div class="progress" id="progress-bar3"></div>
+					<br>
+					<canvas id="pie-chart" width="400" height="400"></canvas>
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>My Incomplete Tasks</h3>
+					</div>
+					<table class="table table-bordered table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Task Name</th>
+							</tr>
+						</thead>
+						<tbody id="my-incomplete-tasks">
+						</tbody>
+					</table>
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>Late Tasks</h3>
+					</div>
+					<table class="table table-bordered table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Task Name</th>
+								<th scope="col">Percentage of Subtasks Complete</th>
+								<th scope="col">Due By</th>
+							</tr>
+						</thead>
+						<tbody id="late-tasks">
+						</tbody>
+					</table>
+
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>In Progress Tasks</h3>
+					</div>
+					<table class="table table-bordered table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Task Name</th>
+								<th scope="col">Percentage of Subtasks Complete</th>
+								<th scope="col">Due By</th>
+							</tr>
+						</thead>
+						<tbody id="inProgress-tasks">
+						</tbody>
+					</table>
+
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>Undated Tasks</h3>
+					</div>
+					<table class="table table-bordered table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Task Name</th>
+								<th scope="col">Percentage of Subtasks Complete</th>
+							</tr>
+						</thead>
+						<tbody id="undated-tasks">
+						</tbody>
+					</table>
+
+					<div class="d-flex justify-content-between flex-wrap align-items-right mb-3 border-bottom">
+						<h3>Completed Tasks</h3>
+					</div>
+					<table class="table table-bordered table-hover">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Task Name</th>
+							</tr>
+						</thead>
+						<tbody id="completed-tasks">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+	</body>
+</html>

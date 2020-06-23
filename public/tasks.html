@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Tasks</title>
+		<link href="/style/style.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script type="text/javascript" src="scripts/func.js"></script>
+		<script type="text/javascript" src="scripts/tasks.js"></script>
+	</head>
+	<body onload="initTasksPage()">
+		<!-- Top Nav Bar -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+			<a class="navbar-brand" href="#" id="top-title">Spicy Management</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbar">
+				<ul class="navbar-nav w-100">
+					<li class="nav-item dropdown ml-auto">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Welcome, [user]!</a>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+							<a class="dropdown-item" href="/settings">Settings</a>
+							<a class="dropdown-item" href="/logout">Sign out</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<!-- Main body container -->
+		<div class="container-fluid mt-3">
+			<div class="row">
+				<!-- Side Nav bar -->
+				<div class="col-3">
+					<div class="list-group">
+						<a href="/" class="list-group-item list-group-item-action">Dash</a>
+						<a href="#" class="list-group-item list-group-item-action list-group-item-secondary">Tasks</a>
+						<a href="/users" class="list-group-item list-group-item-action">Users</a>
+						<a href="/files" class="list-group-item list-group-item-action">Files</a>
+					</div>
+				</div>
+
+				<!-- Body content -->
+				<div class="col-9">
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h1>Tasks</h1>
+						<button type="button" class="btn btn-sm btn-outline-secondary ml-auto" data-toggle="modal" data-target="#massReminderModal" id="massReminderButton" style="display: none">Send Mass Reminder</button>
+						<button type="button" class="btn btn-sm btn-outline-primary ml-2" data-toggle="modal" data-target="#addTaskModal" id="addTaskButton" style="display: none">Add Task</button>
+					</div>
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 border-bottom">
+						<h3>Dated Tasks</h3>
+					</div>
+					<div class="accordion" id="datedTaskAccordion">
+					</div>
+					<div class="d-flex justify-content-between flex-wrap align-items-center mb-3 mt-3 border-bottom">
+						<h3>Undated Tasks</h3>
+					</div>
+					<div class="accordion" id="undatedTaskAccordion">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modals -->
+		<div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form data-toggle="validator" id="addTaskForm">
+							<div class="form-group">
+								<label for="add-task-name" class="col-form-label">Task Name:</label>
+								<input type="text" class="form-control" id="add-task-name" pattern="^[a-zA-Z0-9\s]{1,50}$" required>
+								<div class="help-block">Must contain no more than 50 alphanumeric or space characters.</div>
+							</div>
+							<div class="form-group">
+								<label for="add-task-description" class="col-form-label">Description:</label>
+								<textarea class="form-control" id="add-task-description" pattern='^[a-zA-Z0-9\s,.!;?()""]{0,500}$'></textarea>
+								<div class="help-block">Must contain no more than 500 alphanumeric, space, as well as special characters ,.!?;()"".</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="form-group">
+										<label for="add-task-due-date" class="col-form-label">Due Date:</label>
+										<input type="date" class="form-control" id="add-task-due-date" pattern="^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$">
+										<div class="help-block">Please enter a valid date. (Not required)</div>
+									</div>
+								</div>
+								<div class="col">
+									<div class="form-group">
+										<label for="add-task-due-time" class="col-form-label">Due Time:</label>
+										<input type="time" class="form-control" id="add-task-due-time" pattern="^([01]\d|2[0-3]):?([0-5]\d)$">
+										<div class="help-block">Please enter a valid time. (Not required)</div>
+									</div>
+								</div>
+							</div>
+							<div class="subtask-group">
+								<div>
+									<label for="subtask-table" class="col-form-label">Subtasks</label>
+									<table class='table table-bordered table-hover' id="subtask-table"></table>
+								</div>
+								<button type="button" class="btn btn-primary" onclick="addSubtaskRow(true)">Add Subtask</button>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick='initGlobalList()'>Close</button>
+						<button type="button" class="btn btn-primary" onclick="addValidate()">Add</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form data-toggle="validator" id="editTaskForm">
+							<input type="hidden" id="edit-task-id">
+							<div class="form-group">
+								<label for="edit-task-name" class="col-form-label">Task Name:</label>
+								<input type="text" class="form-control" id="edit-task-name" pattern="^[a-zA-Z0-9\s]{1,50}$" required>
+								<div class="help-block">Must contain no more than 50 alphanumeric or space characters.</div>
+							</div>
+							<div class="form-group">
+								<label for="edit-task-description" class="col-form-label">Description:</label>
+								<textarea class="form-control" id="edit-task-description" pattern='^[a-zA-Z0-9\s,.!;?()""]{0,500}$'></textarea>
+								<div class="help-block">Must contain no more than 500 alphanumeric, space, as well as special characters ,.!?;()"".</div>
+							</div>
+							<div class="row">
+								<div class="col">
+									<div class="form-group">
+										<label for="edit-task-due-date" class="col-form-label">Due Date:</label>
+										<input type="date" class="form-control" id="edit-task-due-date" pattern="^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$">
+										<div class="help-block">Please enter a valid date.</div>
+										<div class="help-block">(Not required)</div>
+									</div>
+								</div>
+								<div class="col">
+									<div class="form-group">
+										<label for="edit-task-due-time" class="col-form-label">Due Time:</label>
+										<input type="time" class="form-control" id="edit-task-due-time" pattern="^([01]\d|2[0-3]):?([0-5]\d)$">
+										<div class="help-block">Please enter a valid time.</div>
+										<div class="help-block">(Not required)</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal" data-target="#deleteTaskModal" data-toggle="modal">Delete</button>
+						<button type="button" class="btn btn-primary" onclick="editValidate()" data-dismiss="modal">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="deleteTaskModal" tabindex="-1" role="dialog" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteTaskModalLabel">Delete Task</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete this task?</p>
+						<p id="delete-task-name"></p>
+						<input type="hidden" id="delete-task-id">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" onclick="deleteTask()" data-dismiss="modal">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="editSubtaskModal" tabindex="-1" role="dialog" aria-labelledby="editSubtaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editSubtaskModalLabel">Edit Subtask</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form data-toggle="validator" id="editSubtaskForm">
+							<input type="hidden" id="edit-subtask-id">
+							<div class="form-group">
+								<label for="edit-subtask-name" class="col-form-label">Subtask Name:</label>
+								<input type="text" class="form-control" id="edit-subtask-name" pattern="^[a-zA-Z0-9\s]{1,50}$" required>
+								<div class="help-block">Must contain no more than 50 alphanumeric or space characters.</div>
+							</div>
+							<div class="form-group">
+								<label for="edit-subtask-description" class="col-form-label">Description:</label>
+								<textarea class="form-control" id="edit-subtask-description" pattern='^[a-zA-Z0-9\s,.!;?()""]{0,500}$'></textarea>
+								<div class="help-block">Must contain no more than 500 alphanumeric, space, as well as special characters ,.!?;()"".</div>
+							</div>
+							<div class="form-group">
+								<label for="edit-subtask-stage" class="col-form-label">Stage:</label>
+								<input type="number" class="form-control" id="edit-subtask-stage" value="1" pattern="^$|^[0-9]*[1-9]+[0-9]*$">
+								<div class="help-block">Must be a number larger than 0. Default value is 1.</div>
+							</div>
+							<div class="form-group">
+								<label for="edit-subtask-people" class="col-form-label">Assigned To:</label>
+								<h5 id="edit-subtask-people-list-holder" class="list-holder"></h5>
+								<div class="autocomplete">
+									<input type="text" class="form-control list-input" id="edit-subtask-people" pattern="^[a-zA-Z0-9\s]{1,50}$">
+									<div class="help-block">Must be a valid directory id or tag. Separate directory ids or tags by commas.</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="edit-subtask-files" class="col-form-label">Files:</label><br>
+								<select id="edit-subtask-files" class="custom-select" multiple="multiple"></select>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary mr-auto" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal" data-target="#deleteSubtaskModal" data-toggle="modal">Delete</button>
+						<button type="button" class="btn btn-primary" onclick="editSubtaskValidate()">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="changeFilesSubtaskModal" tabindex="-1" role="dialog" aria-labelledby="changeFilesSubtaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="changeFilesSubtaskModalLabel">Change Subtask Files</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form>
+							<input type="hidden" id="change-files-subtask-id">
+							<div class="form-group">
+								<label for="change-files-subtask-files" class="col-form-label">Files:</label><br>
+								<select id="change-files-subtask-files" class="custom-select" multiple="multiple"></select>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="changeFilesSubtask()">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="deleteSubtaskModal" tabindex="-1" role="dialog" aria-labelledby="deleteSubtaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="deleteSubaskModalLabel">Delete Subask</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to delete this task?</p>
+						<p id="delete-subtask-name"></p>
+						<input type="hidden" id="delete-subtask-id">
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-danger" onclick="deleteSubtask()" data-dismiss="modal">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="addSubtaskModal" tabindex="-1" role="dialog" aria-labelledby="addSubtaskModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addSubtaskModalLabel">Add Subtask</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form data-toggle="validator" id="addSubtaskForm">
+							<input type="hidden" id="add-subtask-task-id">
+							<div class="form-group">
+								<label for="add-subtask-name" class="col-form-label">Subtask Name:</label>
+								<input type="text" class="form-control" id="add-subtask-name" pattern="^[a-zA-Z0-9\s]{1,50}$" requried>
+								<div class="help-block">Must contain no more than 50 alphanumeric or space characters.</div>
+							</div>
+							<div class="form-group">
+								<label for="add-subtask-description" class="col-form-label">Description:</label>
+								<textarea class="form-control" id="add-subtask-description" pattern='^[a-zA-Z0-9\s,.!;?()""]{0,500}$'></textarea>
+								<div class="help-block">Must contain no more than 500 alphanumeric characters as well as special characters ,.!?;()"".</div>
+							</div>
+							<div class="form-group">
+								<label for="add-subtask-stage" class="col-form-label">Stage:</label>
+								<input type="number" class="form-control" id="add-subtask-stage" value="1" pattern="^[0-9]*[1-9]+[0-9]*$" required>
+								<div class="help-block">Must be a number larger than 0. Default value is 1.</div>
+							</div>
+							<div class="form-group">
+								<label for="add-subtask-people" class="col-form-label">Assigned To:</label>
+								<h5 id="add-subtask-people-list-holder" class="list-holder"></h5>
+								<div class="autocomplete">
+									<input type="text" class="form-control list-input" id="add-subtask-people" pattern="^[a-zA-Z0-9]*$">
+									<div class="help-block">Must be a valid directory id or tag. Separate directory ids or tags by commas.</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="add-subtask-files" class="col-form-label">Files:</label><br>
+								<select id="add-subtask-files" class="custom-select" multiple="multiple"></select>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" onclick="addSubtaskValidate()">Add</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="reminderModal" tabindex="-1" role="dialog" aria-labelledby="reminderModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="reminderModalLabel">Send Reminder</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to send a reminder for the following task:</p>
+						<p id="reminder-task-name"></p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" onclick="sendReminder()" data-dismiss="modal">Send</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="massReminderModal" tabindex="-1" role="dialog" aria-labelledby="massReminderModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="massReminderModalLabel">Send Mass Reminder</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to send a reminder to every person assigned to an unfinished task?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" onclick="sendMassReminder()" data-dismiss="modal">Send</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="subtaskCommentsModal" tabindex="-1" role="dialog" aria-labelledby="subtaskCommentsModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="subtaskCommentsModalLabel"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<p id="comment-subtask-id" hidden></p>
+						<div id="subtask-comment-content">
+
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="input-group mb-3">
+							<textarea id="add-subtask-comment" type="text" class="form-control" placeholder="Add Comment" aria-label="Add Comment" aria-describedby="post-comment-button"></textarea>
+							<div class="input-group-append">
+								<button onclick="postComment()" class="btn btn-primary" type="button" id="post-comment-button">Post Comment</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="invalidTaskInputModal" tabindex="-1" role="dialog" aria-labelledby="invalidTaskInputModalLabel" aria-hiddden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="invalidTaskInputModalLabel">Invalid input!</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-labelledby="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p></p>
+							<p>Please check that all required fields are filled out. All newly created tasks must have at least one subtask.</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+		</div>
+
+		<div class="modal fade" id="taskNoAuthorizationModal" tabindex="-1" role="dialog" aria-labelledby="taskNoAuthorizationModalLabel" aria-hiddden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<p></p>
+							<p>You are not on this task!</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+		</div>
+
+		<div class="modal fade" id="taskPromiseRejectionModal" tabindex="-1" role="dialog" aria-labelledby="taskPromiseRejectionModalLabel" aria-hiddden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+						<div class="modal-body">
+							<p></p>
+							<p>Server Error!</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+	</body>
+</html>
